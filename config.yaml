@@ -1,0 +1,15 @@
+coins:
+  - dogecoin
+  - shiba-inu
+  - pepe
+  - floki
+  - dogwifcoin
+  - bonk
+  - turbo
+  - arbidog
+  - mog-coin
+  - pork
+
+vs_currency: usd
+openai_model: gpt-4
+prompt_file: prompts/coin_analysis.txt

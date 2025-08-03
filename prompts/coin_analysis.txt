@@ -1,0 +1,9 @@
+Tu es un analyste crypto. Voici les informations sur les 10 principaux meme coins. Pour chaque coin, donne-moi une recommandation (ACHETER, VENDRE, CONSERVER) avec une brève justification. Concentre-toi sur le volume 24h, la variation de prix, et le market cap.
+
+Réponds dans ce format :
+COIN: ACTION - RAISON
+
+Exemple :
+PEPE: ACHETER - Fort volume + hausse récente
+WIF: CONSERVER - Stable
+FLOKI: VENDRE - Faible intérêt + volume en baisse

@@ -13,7 +13,7 @@ Chaque heure :
 ## 🛠️ Installation
 
 ```bash
-git clone https://github.com/toncompte/chatgpt-meme-coin-experiment.git
+git clone https://github.com/misterbh-saashup/chatgpt-meme-coin-experiment.git
 cd chatgpt-meme-coin-experiment
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt

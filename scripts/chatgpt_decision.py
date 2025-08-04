@@ -6,15 +6,14 @@
 # pyyaml==6.0.1
 
 import os
-import time
 import json
+from datetime import datetime
 import yaml
 import openai
 import requests
-from datetime import datetime
 
 # === Load Configuration ===
-with open("config.yaml", "r") as f:
+with open("config.yaml", "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
 COINS = config["coins"]

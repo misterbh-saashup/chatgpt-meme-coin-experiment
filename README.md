@@ -17,3 +17,16 @@ git clone https://github.com/misterbh-saashup/chatgpt-meme-coin-experiment.git
 cd chatgpt-meme-coin-experiment
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+```
+
+## 🚚 Running with Docker
+
+Build the image:
+
+`docker build -t chatgpt-meme-coin-experiment .`
+
+Then run:
+
+`docker run --rm -e OPENAI_API_KEY="...your.openai.api.key..." -v $PWD/config.yaml:/usr/src/app/config.yaml -v $PWD/data:/usr/src/app/data -v $PWD/logs:/usr/src/app/logs chatgpt-meme-coin-experiment:latest`
+
+If you have a free OpenAI account, you can change `openai_model` in the `config.yaml` file to `gpt-4.1-mini`.

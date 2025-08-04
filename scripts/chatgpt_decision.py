@@ -34,59 +34,65 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 os.makedirs("logs", exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
+
 # === Step 1: Fetch market data ===
 def fetch_market_data():
-    url = f"https://api.coingecko.com/api/v3/coins/markets"
+    url = "https://api.coingecko.com/api/v3/coins/markets"
     params = {
         "vs_currency": VS_CURRENCY,
         "ids": ",".join(COINS),
         "order": "market_cap_desc",
         "per_page": 10,
         "page": 1,
-        "sparkline": False
+        "sparkline": False,
     }
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, timeout=5)
     data = response.json()
-    with open(MARKET_DATA_FILE, "w") as f:
+    with open(MARKET_DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return data
 
+
 # === Step 2: Format prompt for GPT ===
 def create_prompt(market_data):
-    with open(PROMPT_FILE, "r") as f:
+    with open(PROMPT_FILE, "r", encoding="utf-8") as f:
         prompt = f.read().strip()
     prompt += "\n\nVoici les données :"
     for coin in market_data:
-        prompt += (f"\n{coin['name'].upper()} ({coin['symbol'].upper()}): prix ${coin['current_price']},"
-                   f" volume 24h ${coin['total_volume']}, variation 24h {coin['price_change_percentage_24h']}%,"
-                   f" market cap ${coin['market_cap']}")
+        prompt += (
+            f"\n{coin['name'].upper()} ({coin['symbol'].upper()}): prix ${coin['current_price']},"
+            f" volume 24h ${coin['total_volume']},"
+            f"variation 24h {coin['price_change_percentage_24h']}%,"
+            f" market cap ${coin['market_cap']}"
+        )
     return prompt
+
 
 # === Step 3: Ask ChatGPT ===
 def ask_chatgpt(prompt):
     response = openai.chat.completions.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
+        model=MODEL, messages=[{"role": "user", "content": prompt}], temperature=0.7
     )
     return response.choices[0].message.content
 
+
 # === Step 4: Log result ===
 def log_decision(content):
-    with open(LOG_FILE, "a") as f:
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(f"[{datetime.now().isoformat()}]\n{content}\n\n")
+
 
 # === Step 5: Update simulated portfolio ===
 def update_portfolio(recommendation_text, market_data):
     portfolio = {}
     if os.path.exists(PORTFOLIO_FILE):
-        with open(PORTFOLIO_FILE, "r") as f:
+        with open(PORTFOLIO_FILE, "r", encoding="utf-8") as f:
             for line in f.readlines()[1:]:
                 coin, quantity = line.strip().split(",")
                 portfolio[coin] = float(quantity)
 
     lines = recommendation_text.strip().split("\n")
-    coin_prices = {c['name'].upper(): c['current_price'] for c in market_data}
+    coin_prices = {c["name"].upper(): c["current_price"] for c in market_data}
 
     for line in lines:
         if ":" in line and " - " in line:
@@ -101,13 +107,13 @@ def update_portfolio(recommendation_text, market_data):
             if action == "ACHETER":
                 portfolio[coin] = portfolio.get(coin, 0) + quantity
             elif action == "VENDRE":
-                if coin in portfolio:
-                    portfolio[coin] = max(portfolio[coin] - quantity, 0)
+                portfolio[coin] = max(portfolio.get(coin, 0) - quantity, 0)
 
-    with open(PORTFOLIO_FILE, "w") as f:
+    with open(PORTFOLIO_FILE, "w", encoding="utf-8") as f:
         f.write("coin,quantity\n")
         for coin, quantity in portfolio.items():
             f.write(f"{coin},{quantity}\n")
+
 
 # === MAIN RUN ===
 def main():
@@ -127,6 +133,7 @@ def main():
     update_portfolio(result, market_data)
 
     print("✅ Decision logged and portfolio updated.")
+
 
 if __name__ == "__main__":
     main()
